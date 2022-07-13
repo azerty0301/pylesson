@@ -27,15 +27,19 @@ def markoving(text):
 
 
     text_model = markovify.NewlineText(text, state_size=3)
-    print(re.sub(" ","", new_model.make_short_sentence(100, tries=100))
+    new_model = markovify.combine([current_model, text_model])
+    print(re.sub(" ","", new_model.make_short_sentence(100, tries=100)))
 
 
-            #with open("model/text_model.json", "w") as f:
-            #f.write(text_model.to_json())
-            with open("model/text_model.json", "w") as f:
-            f.write(new_model.to_json())
+    with open("model/text_model.json", "w") as f:
+        f.write(new_model.to_json())
 
 df = pd.read_csv("csv/shoujoJigoku.csv")
 #print(df)
 text = df_for_text(df.iloc[:, 3])
+'''
+text_model = markovify.NewlineText(text, state_size=3)
+with open("model/text_model.json", "w") as f:
+    f.write(text_model.to_json())
+'''
 markoving(text)
