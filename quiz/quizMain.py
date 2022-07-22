@@ -2,10 +2,12 @@ import tkinter
 from tkinter import messagebox
 import random
 import csv
+import pandas as pd
 
 # クイズの情報を格納したファイル
-CSV_FILE = "quiz.csv"
-
+CSV_FILE = "quizU.csv"
+num_quiz = 0
+f = None
 
 class Quiz():
     def __init__(self, master):
@@ -30,22 +32,23 @@ class Quiz():
         self.showQuiz()
 
     def getQuiz(self):
+        global f 
         '''クイズの情報を取得する'''
 
         # ファイルを開く
         try:
-            f = open(CSV_FILE)
+            f = pd.read_csv('quizU.csv', encoding='utf8')
         except FileNotFoundError:
             return None
 
         # CSVデータとしてファイル読み込み
-        csv_data = csv.reader(f)
+        #csv_data = csv.reader(f)
 
         # CSVの各行をリスト化
-        for quiz in csv_data:
+        for quiz in f:
             self.quiz_list.append(quiz)
 
-        f.close()
+        #f.close()
 
     def createWidgets(self):
         '''ウィジェットを作成・配置する'''
@@ -67,6 +70,7 @@ class Quiz():
         self.button.pack()
 
     def showQuiz(self):
+        global num_quiz
         '''問題と選択肢を表示'''
 
         # まだ表示していないクイズからクイズ情報をランダムに取得
@@ -98,7 +102,7 @@ class Quiz():
             choice.grid(
                 row=1,
                 column=i,
-                padx=10
+                padx=10,
                 pady=10,
             )
             # ウィジェットを覚えておく
@@ -125,9 +129,11 @@ class Quiz():
 
         # 正解かどうかを確認してメッセージを表示
         if self.choice_value.get() == int(self.now_quiz[5]):
-            messagebox.showinfo("正解！！")
+            messagebox.showinfo("結果", "正解です！！")
         else:
-            messagebox.showerror("不正解！")
+            ans_index = f.iloc[num_quiz,5]
+            answer = f.iloc[num_quiz, ans_index]
+            messagebox.showerror("結果", "不正解です。\n"+ answer)
 
         # 表示中のクイズを非表示にする
         self.deleteQuiz()
@@ -159,6 +165,6 @@ class Quiz():
             command=self.master.destroy
         )
 
-app = tkinter.Tk()
-quiz = Quiz(app)
-app.mainloop()
+root = tkinter.Tk()
+quiz = Quiz(root)
+root.mainloop()
