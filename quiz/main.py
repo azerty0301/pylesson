@@ -4,7 +4,7 @@ import random
 import csv
 import pandas as pd
 
-quizQuantity = 39
+quizQuantity = 40
 
 root = tk.Tk()
 root.title('Quiz')
