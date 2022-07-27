@@ -1,78 +1,50 @@
+import csv
 import tkinter as tk
 from tkinter import messagebox
-import random
-import csv
-import pandas as pd
 
-quizQuantity = 40
+qs=[]
+qpath="quizUTF.csv"
+total_count=0
+ok_count=0
+with open(qpath, encoding = "utf-8") as f:
+    qs  =list(csv.reader(f))
+qindex=0
+def click_bt():
+    global qindex,ok_count,total_count
+    total_count+=1
+    user_ans=iv.get()
+    isOk=user_ans==int(qs[qindex][5])
+    if isOk:
+        ok_count+=1
+    res="正解!" if isOk else f'不正解...正解は「{qs[qindex][int(qs[qindex][5])]}」'
+    if total_count==len(qs):
+        res=res+f'\n全{len(qs)}中{ok_count}正解でした!'
+    messagebox.showinfo('確認', res)
+    if total_count==len(qs):
+        return
+    qindex+=1
+    label['text']=qs[qindex][0]
+    rb1['text']=qs[qindex][1]
+    rb2['text']=qs[qindex][2]
+    rb3['text']=qs[qindex][3]
+    rb4['text']=qs[qindex][4]
+    iv.set(0)
 
-root = tk.Tk()
-root.title('Quiz')
-root.geometry('600x400')
-var = tk.IntVar()
-var.set(0)
-indexList = list(range(40))
-random.shuffle(indexList)
-quiz_index = 0
-totalcount=40
-correct=0
-qLabel=None
+root=tk.Tk()
+root.title("クイズ")
+root.geometry("500x300")
 
-
-
-
-df = pd.read_csv('quizU.csv', encoding = 'utf-8')
-def selector():
-    global quiz_index
-    while True:
-        quiz_index = random.randrange(totalcount)
-        if len(indexChosen)==0:
-            indexChosen.append(quiz_index)
-        else:
-            for i in indexChosen:
-                if quiz_index in indexChosen:
-                    quiz_index = random.randrange(totalcount)
-                if quiz_index not in indexChosen:
-                    indexChosen.append(quiz_index)
-                    return
-
-def clickBtn():
-    global totalcount,indexChosen,quiz_index,correct,qLabel,button,indexList
-    button['text']='OK'
-    totalcount += 1 
-    if not qLabel == None:    
-        qLabel.pack_forget()
-        button.place_forget()
-    
-
-    #print(quiz_index)
-    qLabel = tk.Label(root, text = df.iloc[indexList[quiz_index],0])
-    qLabel.pack()
-
-    for i in range(4):
-        radioButton = tk.Radiobutton(root, value=i+1, variable=var, text=df.iloc[indexList[quiz_index],i+1])
-        radioButton.place(x=10, y=100+40*i)
-
-    userAns = var.get()
-    ans_index = df.iloc[indexList[quiz_index],5]
-    quiz_index += 1
-    print(userAns)
-    print(ans_index)
-
-    if button['text']=='OK':
-        if userAns == ans_index:
-            correct += 1
-            messagebox.showinfo("結果", "正解です！！")
-        else:
-            
-            answer = df.iloc[quiz_index, ans_index]
-            messagebox.showerror("結果", "不正解です。\n"+ answer)
-    print(correct)
-
-button=startButton = tk.Button(
-    text = 'START',
-    command = clickBtn
-    )
-startButton.place(x=10, y=300)
-
+label=tk.Label(text=qs[qindex][0])
+label.pack()
+iv=tk.IntVar()
+rb1=tk.Radiobutton(text=qs[qindex][1],value=1,variable=iv)
+rb1.pack()
+rb2=tk.Radiobutton(text=qs[qindex][2],value=2,variable=iv)
+rb2.pack()
+rb3=tk.Radiobutton(text=qs[qindex][3],value=3,variable=iv)
+rb3.pack()
+rb4=tk.Radiobutton(text=qs[qindex][4],value=4,variable=iv)
+rb4.pack()
+bt=tk.Button(text="click",command=click_bt)
+bt.pack()
 root.mainloop()
